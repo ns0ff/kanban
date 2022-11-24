@@ -1,36 +1,47 @@
 import React from "react";
+import { FilterType } from "./App";
 
-type TaskType = {
-    id: number
-    title: string
-    isDone: boolean
-}
+export type TaskType = {
+  id: string;
+  title: string;
+  isDone: boolean;
+};
 
 type ListType = {
-    id: number
-    title: string
-    tasks: Array<TaskType>
-}
+  title: string;
+  tasks: Array<TaskType>;
+  removeTask: (taskId: string) => void;
+  changeFilterValue: (filterValue: FilterType) => void
+};
 
 export const List = (props: ListType) => {
+  const listElements = props.tasks.map((task: TaskType) => {
     return (
-        <div>
-                <h3>{props.title}</h3>
-                <div>
-                    <input/>
-                    <button>+</button>
-                </div>
-                <ul>
-                    <li key={props.id}><input type="checkbox" checked={props.tasks[0].isDone}/> <span>{props.tasks[0].title}</span></li>
-                    <li key={props.id}><input type="checkbox" checked={props.tasks[1].isDone}/> <span>{props.tasks[1].title}</span></li>
-                    <li key={props.id}><input type="checkbox" checked={props.tasks[2].isDone}/> <span>{props.tasks[2].title}</span></li>
-                    <li key={props.id}><input type="checkbox" checked={props.tasks[3].isDone}/> <span>{props.tasks[3].title}</span></li>
-                </ul>
-                <div>
-                    <button>All</button>
-                    <button>Active</button>
-                    <button>Completed</button>
-                </div>
-            </div>
-    )
-}
+      <li key={task.id}>
+        <input type="checkbox" checked={task.isDone} />{" "}
+        <span>{task.title}</span>
+        <button onClick={() => props.removeTask(task.id)}>X</button>
+      </li>
+    );
+  });
+
+  const changeFilterHandler = (value: FilterType) => {
+    props.changeFilterValue(value)
+  }
+
+  return (
+    <div>
+      <h3>{props.title}</h3>
+      <div>
+        <input />
+        <button>+</button>
+      </div>
+      <ul>{listElements}</ul>
+      <div>
+        <button onClick={() => changeFilterHandler('all')}>All</button>
+        <button onClick={() => changeFilterHandler('active')}>Active</button>
+        <button onClick={() => changeFilterHandler('completed')}>Completed</button>
+      </div>
+    </div>
+  );
+};
