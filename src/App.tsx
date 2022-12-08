@@ -24,31 +24,36 @@ function App() {
     setTasks(removedTasks);
   };
 
+  // Add task
+  const addTask = (title: string) => {
+    setTasks([{ id: v1(), title, isDone: false }, ...tasks])
+  }
+
   // Change filter value
   const changeListFilter = (filterValue: string) => {
     setFilter(filterValue)
   }
 
   // Render filtered tasks
-  let toRender: Array<TaskType> = []
-
-  switch(filter){
-    case 'active':
-        toRender = tasks.filter(t => t.isDone !== true)
-        break
-    case 'completed' :
-        toRender = tasks.filter(t => t.isDone !== false)
-        break
-    default :
-        toRender = tasks
+  const getFilteredTask = (tasks: Array<TaskType>, filter: FilterType) => {
+    switch (filter) {
+      case 'active':
+        return tasks.filter(t => t.isDone !== true)
+      case 'completed':
+        return tasks.filter(t => t.isDone !== false)
+      default:
+        return tasks
+    }
   }
 
+  const filteredTasks: Array<TaskType> = getFilteredTask(tasks, filter)
 
-  
+
+
 
   return (
     <div className="App">
-      <List title={listTitle} tasks={toRender} removeTask={removeTask} changeFilterValue={changeListFilter}/>
+      <List title={listTitle} tasks={filteredTasks} removeTask={removeTask} changeFilterValue={changeListFilter} addTask={addTask} />
     </div>
   );
 }

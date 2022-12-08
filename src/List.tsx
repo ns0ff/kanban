@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEvent, useState, KeyboardEvent } from "react";
 import { FilterType } from "./App";
 
 export type TaskType = {
@@ -12,6 +12,7 @@ type ListType = {
   tasks: Array<TaskType>;
   removeTask: (taskId: string) => void;
   changeFilterValue: (filterValue: FilterType) => void
+  addTask: (title: string) => void
 };
 
 export const List = (props: ListType) => {
@@ -25,22 +26,46 @@ export const List = (props: ListType) => {
     );
   });
 
+  // Title local state
+  let [title, setTitle] = useState('')
+
+  // Handlers:
+  //Filter handlers:
   const changeFilterHandler = (value: FilterType) => {
     props.changeFilterValue(value)
   }
+  const onClickHandlerCreator = (filter: FilterType) => () => props.changeFilterValue(filter)
+
+
+  // Add task handlers:
+  const addTaskHandler = () => {
+    props.addTask(title)
+    setTitle('')
+  }
+  const setLocalTitleHandler = (e: ChangeEvent<HTMLInputElement>) => setTitle(e.currentTarget.value)
+  const onEnterAddTaskHandler = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      addTaskHandler()
+    }
+  }
+
+  
 
   return (
     <div>
       <h3>{props.title}</h3>
       <div>
-        <input />
-        <button>+</button>
+        <input
+          value={title}
+          onChange={setLocalTitleHandler}
+          onKeyDown={onEnterAddTaskHandler} />
+        <button onClick={addTaskHandler}>+</button>
       </div>
       <ul>{listElements}</ul>
       <div>
-        <button onClick={() => changeFilterHandler('all')}>All</button>
-        <button onClick={() => changeFilterHandler('active')}>Active</button>
-        <button onClick={() => changeFilterHandler('completed')}>Completed</button>
+        <button onClick={onClickHandlerCreator('all')}>All</button>
+        <button onClick={onClickHandlerCreator('active')}>Active</button>
+        <button onClick={onClickHandlerCreator('completed')}>Completed</button>
       </div>
     </div>
   );
