@@ -48,12 +48,25 @@ function App() {
 
   const filteredTasks: Array<TaskType> = getFilteredTask(tasks, filter)
 
+  // Change task status
+  const changeTaskStatus = (id: string, isDone: boolean) => {
+    setTasks(tasks.map((el: TaskType) => el.id === id ? { ...el, isDone: isDone } : el))
+  }
+
 
 
 
   return (
     <div className="App">
-      <List title={listTitle} tasks={filteredTasks} removeTask={removeTask} changeFilterValue={changeListFilter} addTask={addTask} />
+      <List
+        title={listTitle}
+        tasks={filteredTasks}
+        filterValue={filter}
+        removeTask={removeTask}
+        changeFilterValue={changeListFilter}
+        addTask={addTask}
+        changeTaskStatus={changeTaskStatus}
+      />
     </div>
   );
 }
