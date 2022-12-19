@@ -8,13 +8,15 @@ export type TaskType = {
 };
 
 type ListType = {
-  title: string;
-  tasks: Array<TaskType>;
+  listID: string
+  title: string
+  tasks: Array<TaskType>
   filterValue: FilterType
-  removeTask: (taskId: string) => void;
-  changeFilterValue: (filterValue: FilterType) => void
-  addTask: (title: string) => void
-  changeTaskStatus: (id: string, isDone: boolean) => void
+  removeTask: (taskId: string, listID: string) => void
+  changeFilterValue: (filterValue: FilterType, listID: string) => void
+  addTask: (title: string, listID: string) => void
+  changeTaskStatus: (id: string, isDone: boolean, listID: string) => void
+  removeList: (id: string) => void
 };
 
 export const List = (props: ListType) => {
@@ -26,10 +28,10 @@ export const List = (props: ListType) => {
             <input
               type="checkbox"
               checked={task.isDone}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => props.changeTaskStatus(task.id, e.currentTarget.checked)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => props.changeTaskStatus(task.id, e.currentTarget.checked, props.listID)}
             />
             <span className={task.isDone ? 'completed' : 'task'}>{task.title}</span>
-            <button onClick={() => props.removeTask(task.id)}>X</button>
+            <button onClick={() => props.removeTask(task.id, props.listID)}>X</button>
           </li>
         );
       })}
@@ -42,13 +44,12 @@ export const List = (props: ListType) => {
 
   // Handlers:
   //Filter handler:
-  const onClickHandlerCreator = (filter: FilterType) => () => props.changeFilterValue(filter)
-
+  const onClickHandlerCreator = (filter: FilterType) => () => props.changeFilterValue(filter, props.listID)
 
   // Add task handlers:
   const addTaskHandler = () => {
     const trimmedTitle = title.trim()
-    trimmedTitle ? props.addTask(trimmedTitle) : setError(true)
+    trimmedTitle ? props.addTask(trimmedTitle, props.listID) : setError(true)
     setTitle('')
   }
   const setLocalTitleHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -61,9 +62,17 @@ export const List = (props: ListType) => {
     }
   }
 
+  // Remove list handler
+  const removeListHandler = () => props.removeList(props.listID)
+
   return (
     <div>
-      <h3>{props.title}</h3>
+      <div>
+        <h3>
+          {props.title}
+          <button onClick={removeListHandler}>x</button>
+        </h3>
+      </div>
       <div>
         <input className={error ? 'error' : ''}
           value={title}

@@ -5,33 +5,53 @@ import { v1 } from "uuid";
 
 export type FilterType = "all" | "completed" | "active";
 
-function App() {
-  const listTitle = "Camera setup checklist";
-  const [tasks, setTasks] = useState<Array<TaskType>>([
-    { id: v1(), title: "ISO", isDone: false },
-    { id: v1(), title: "Cards", isDone: false },
-    { id: v1(), title: "Battery", isDone: true },
-    { id: v1(), title: "Recording resolution", isDone: true },
-    { id: v1(), title: "Bitrate / Compression", isDone: true },
-    { id: v1(), title: "Color space", isDone: true },
-  ]);
+type TodoListsType = {
+  id: string
+  title: string
+  filter: FilterType
+}
 
-  const [filter, setFilter] = useState<any>("all");
+type TasksStateType = {
+  [listID: string]: Array<TaskType>
+}
+
+function App() {
+  const id_1 = v1()
+  const id_2 = v1()
+
+  const [todoLists, setTodoLists] = useState<Array<TodoListsType>>([
+    { id: id_1, title: "Camera setup checklist", filter: 'all' },
+    { id: id_2, title: "Gear checklist", filter: 'all' }
+  ])
+
+  const [tasks, setTasks] = useState<TasksStateType>({
+    [id_1]: [
+      { id: v1(), title: "ISO", isDone: true },
+      { id: v1(), title: "Recording resolution", isDone: false },
+      { id: v1(), title: "Bitrate / Compression", isDone: false },
+      { id: v1(), title: "Color space", isDone: false }
+    ],
+    [id_2]: [
+      { id: v1(), title: "Crane", isDone: false },
+      { id: v1(), title: "Lenses", isDone: false },
+      { id: v1(), title: "Battery", isDone: true },
+      { id: v1(), title: "Cards", isDone: true },
+      { id: v1(), title: "Drone", isDone: false }
+    ]
+  })
 
   // Remove task from the list
-  const removeTask = (taskId: string) => {
-    const removedTasks = tasks.filter((task) => task.id !== taskId);
-    setTasks(removedTasks);
-  };
+  const removeTask = (taskId: string, listID: string) => setTasks({ ...tasks, [listID]: tasks[listID].filter((task) => task.id !== taskId) })
 
   // Add task
-  const addTask = (title: string) => {
-    setTasks([{ id: v1(), title, isDone: false }, ...tasks])
-  }
+  const addTask = (title: string, listID: string) => setTasks({ ...tasks, [listID]: [{ id: v1(), title, isDone: false }, ...tasks[listID]] })
+
+  // Change task status
+  const changeTaskStatus = (id: string, isDone: boolean, listID: string) => setTasks({ ...tasks, [listID]: tasks[listID].map((el: TaskType) => el.id === id ? { ...el, isDone: isDone } : el) })
 
   // Change filter value
-  const changeListFilter = (filterValue: string) => {
-    setFilter(filterValue)
+  const changeListFilter = (filterValue: FilterType, listID: string) => {
+    setTodoLists(todoLists.map(list => list.id === listID ? {...list, filter: filterValue } : list))
   }
 
   // Render filtered tasks
@@ -46,29 +66,37 @@ function App() {
     }
   }
 
-  const filteredTasks: Array<TaskType> = getFilteredTask(tasks, filter)
-
-  // Change task status
-  const changeTaskStatus = (id: string, isDone: boolean) => {
-    setTasks(tasks.map((el: TaskType) => el.id === id ? { ...el, isDone: isDone } : el))
+  // Delete List:
+  const removeList = (listID: string) => {
+    setTodoLists(todoLists.filter(list => list.id !== listID))
+    delete tasks[listID]
   }
 
-
-
-
-  return (
-    <div className="App">
+  // Lists components
+  const listsComponents = todoLists.map((list: TodoListsType) => {
+    const filteredTasks: Array<TaskType> = getFilteredTask(tasks[list.id], list.filter)
+    return (
       <List
-        title={listTitle}
+        listID={list.id}
+        title={list.title}
         tasks={filteredTasks}
-        filterValue={filter}
+        filterValue={list.filter}
         removeTask={removeTask}
         changeFilterValue={changeListFilter}
         addTask={addTask}
         changeTaskStatus={changeTaskStatus}
+        removeList={removeList}
       />
+    )
+
+  })
+
+
+  return (
+    <div className="App">
+      {listsComponents}
     </div>
   );
 }
 
-export default App;
+export default App
