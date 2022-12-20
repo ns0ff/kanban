@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useState, KeyboardEvent } from "react";
+import { AddItemForm } from "./addItemForm";
 import { FilterType } from "./App";
 
 export type TaskType = {
@@ -38,32 +39,17 @@ export const List = (props: ListType) => {
     </ul>
     : <span>Your task list is empty :(</span>
 
-  // Title local state
-  let [title, setTitle] = useState<string>('')
-  let [error, setError] = useState<boolean>(false)
-
   // Handlers:
   //Filter handler:
   const onClickHandlerCreator = (filter: FilterType) => () => props.changeFilterValue(filter, props.listID)
 
-  // Add task handlers:
-  const addTaskHandler = () => {
-    const trimmedTitle = title.trim()
-    trimmedTitle ? props.addTask(trimmedTitle, props.listID) : setError(true)
-    setTitle('')
-  }
-  const setLocalTitleHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    error && setError(false)
-    setTitle(e.currentTarget.value)
-  }
-  const onEnterAddTaskHandler = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      addTaskHandler()
-    }
-  }
-
   // Remove list handler
   const removeListHandler = () => props.removeList(props.listID)
+
+  // Add new task handler
+  const addNewTask = (title: string) => {
+    props.addTask(title, props.listID)
+  }
 
   return (
     <div>
@@ -73,13 +59,7 @@ export const List = (props: ListType) => {
           <button onClick={removeListHandler}>x</button>
         </h3>
       </div>
-      <div>
-        <input className={error ? 'error' : ''}
-          value={title}
-          onChange={setLocalTitleHandler}
-          onKeyDown={onEnterAddTaskHandler} />
-        <button onClick={addTaskHandler}>+</button>
-      </div>
+      <AddItemForm addItem={addNewTask}/>
       {listElements}
       <div>
         <button className={props.filterValue === 'all' ? 'btn-active' : ''}
