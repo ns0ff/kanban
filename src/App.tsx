@@ -50,10 +50,12 @@ function App() {
   // Change task status
   const changeTaskStatus = (id: string, isDone: boolean, listID: string) => setTasks({ ...tasks, [listID]: tasks[listID].map((el: TaskType) => el.id === id ? { ...el, isDone: isDone } : el) })
 
+  // Change task title
+  const changeTaskTitle = (id: string, newTitle: string, listID: string) => setTasks({ ...tasks, [listID]: tasks[listID].map((el: TaskType) => el.id === id ? {...el, title: newTitle } : el) })
+
   // Change filter value
-  const changeListFilter = (filterValue: FilterType, listID: string) => {
-    setTodoLists(todoLists.map(list => list.id === listID ? {...list, filter: filterValue } : list))
-  }
+  const changeListFilter = (filterValue: FilterType, listID: string) => setTodoLists(todoLists.map(list => list.id === listID ? {...list, filter: filterValue } : list))
+  
 
   // Render filtered tasks
   const getFilteredTask = (tasks: Array<TaskType>, filter: FilterType) => {
@@ -85,6 +87,9 @@ function App() {
     setTasks({...tasks, [newListID]: []})
   }
 
+  // Rename list
+  const renameList = (newTitle: string, listID: string) => setTodoLists(todoLists.map(list => list.id === listID ? {...list, title: newTitle } : list))
+
   // Lists components
   const listsComponents = todoLists.map((list: TodoListsType) => {
     const filteredTasks: Array<TaskType> = getFilteredTask(tasks[list.id], list.filter)
@@ -99,6 +104,8 @@ function App() {
         addTask={addTask}
         changeTaskStatus={changeTaskStatus}
         removeList={removeList}
+        renameList={renameList}
+        renameTask={changeTaskTitle}
       />
     )
 

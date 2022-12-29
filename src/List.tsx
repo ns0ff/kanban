@@ -1,6 +1,7 @@
 import React, { ChangeEvent, useState, KeyboardEvent } from "react";
 import { AddItemForm } from "./addItemForm";
 import { FilterType } from "./App";
+import { EditableSpan } from "./components/EditableSpan";
 
 export type TaskType = {
   id: string;
@@ -18,12 +19,15 @@ type ListType = {
   addTask: (title: string, listID: string) => void
   changeTaskStatus: (id: string, isDone: boolean, listID: string) => void
   removeList: (id: string) => void
+  renameTask: (id: string, newTitle: string, listID: string) => void
+  renameList: (newTitle: string, listID: string) => void
 };
 
 export const List = (props: ListType) => {
   const listElements = props.tasks.length ?
     <ul>
       {props.tasks.map((task: TaskType) => {
+        const renameTask = (newTitle: string) => props.renameTask(task.id, newTitle, props.listID)
         return (
           <li key={task.id}>
             <input
@@ -31,7 +35,10 @@ export const List = (props: ListType) => {
               checked={task.isDone}
               onChange={(e: ChangeEvent<HTMLInputElement>) => props.changeTaskStatus(task.id, e.currentTarget.checked, props.listID)}
             />
-            <span className={task.isDone ? 'completed' : 'task'}>{task.title}</span>
+            {/* <span className={task.isDone ? 'completed' : 'task'}>{task.title}</span> */}
+            <div style={{display: 'inline-block'}} className={task.isDone ? 'completed' : 'task'}>
+              <EditableSpan title={task.title} changeTitle={renameTask}/>
+            </div>
             <button onClick={() => props.removeTask(task.id, props.listID)}>X</button>
           </li>
         );
@@ -47,15 +54,16 @@ export const List = (props: ListType) => {
   const removeListHandler = () => props.removeList(props.listID)
 
   // Add new task handler
-  const addNewTask = (title: string) => {
-    props.addTask(title, props.listID)
-  }
+  const addNewTask = (title: string) => props.addTask(title, props.listID)
+
+  const renameList = (newTitle: string) => props.renameList(newTitle, props.listID)
 
   return (
     <div>
       <div>
         <h3>
-          {props.title}
+          <EditableSpan title={props.title} changeTitle={renameList}/>
+          {/* {props.title} */}
           <button onClick={removeListHandler}>x</button>
         </h3>
       </div>
