@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import { List, TaskType } from "./List";
 import { v1 } from "uuid";
+import { AddItemForm } from "./addItemForm";
 
 export type FilterType = "all" | "completed" | "active";
 
@@ -72,6 +73,18 @@ function App() {
     delete tasks[listID]
   }
 
+  // Add new list:
+  const addList = (newTitle: string) => {
+    const newListID = v1()
+    const newList: TodoListsType = {
+      id: newListID,
+      title: newTitle,
+      filter: "all"
+    }
+    setTodoLists([...todoLists, newList])
+    setTasks({...tasks, [newListID]: []})
+  }
+
   // Lists components
   const listsComponents = todoLists.map((list: TodoListsType) => {
     const filteredTasks: Array<TaskType> = getFilteredTask(tasks[list.id], list.filter)
@@ -94,6 +107,7 @@ function App() {
 
   return (
     <div className="App">
+      <AddItemForm addItem={addList} />
       {listsComponents}
     </div>
   );
