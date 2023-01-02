@@ -1,7 +1,13 @@
+import Button from "@mui/material/Button";
 import React, { ChangeEvent, useState, KeyboardEvent } from "react";
 import { AddItemForm } from "./addItemForm";
 import { FilterType } from "./App";
 import { EditableSpan } from "./components/EditableSpan";
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { ButtonGroup, IconButton, ListItem, Typography } from "@mui/material";
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import Checkbox from '@mui/material/Checkbox';
+import List from '@mui/material/List'
 
 export type TaskType = {
   id: string;
@@ -23,27 +29,26 @@ type ListType = {
   renameList: (newTitle: string, listID: string) => void
 };
 
-export const List = (props: ListType) => {
+export const TodoList = (props: ListType) => {
   const listElements = props.tasks.length ?
-    <ul>
+    <List>
       {props.tasks.map((task: TaskType) => {
         const renameTask = (newTitle: string) => props.renameTask(task.id, newTitle, props.listID)
         return (
-          <li key={task.id}>
-            <input
-              type="checkbox"
+          <ListItem key={task.id} sx={{p: '0'}}>
+            <Checkbox 
+              size='small'
               checked={task.isDone}
               onChange={(e: ChangeEvent<HTMLInputElement>) => props.changeTaskStatus(task.id, e.currentTarget.checked, props.listID)}
             />
-            {/* <span className={task.isDone ? 'completed' : 'task'}>{task.title}</span> */}
             <div style={{display: 'inline-block'}} className={task.isDone ? 'completed' : 'task'}>
               <EditableSpan title={task.title} changeTitle={renameTask}/>
             </div>
-            <button onClick={() => props.removeTask(task.id, props.listID)}>X</button>
-          </li>
+            <IconButton size='small' color='secondary' onClick={() => props.removeTask(task.id, props.listID)}><HighlightOffIcon fontSize="small"/></IconButton>
+          </ListItem>
         );
       })}
-    </ul>
+    </List>
     : <span>Your task list is empty :(</span>
 
   // Handlers:
@@ -61,21 +66,32 @@ export const List = (props: ListType) => {
   return (
     <div>
       <div>
-        <h3>
+        <Typography variant="h6" align="center">
           <EditableSpan title={props.title} changeTitle={renameList}/>
-          {/* {props.title} */}
-          <button onClick={removeListHandler}>x</button>
-        </h3>
+          <IconButton onClick={removeListHandler} color='secondary'><DeleteForeverIcon /></IconButton>
+        </Typography>
       </div>
       <AddItemForm addItem={addNewTask}/>
       {listElements}
       <div>
-        <button className={props.filterValue === 'all' ? 'btn-active' : ''}
-          onClick={onClickHandlerCreator('all')}>All</button>
-        <button className={props.filterValue === 'active' ? 'btn-active' : ''}
-          onClick={onClickHandlerCreator('active')}>Active</button>
-        <button className={props.filterValue === 'completed' ? 'btn-active' : ''}
-          onClick={onClickHandlerCreator('completed')}>Completed</button>
+        <ButtonGroup 
+        fullWidth
+        size={'small'}
+        variant={'outlined'}
+        >
+        <Button 
+          sx={{mr: '3px', fontSize: '10px', minWidth: 'fit-content'}}
+          color={props.filterValue === 'all' ? 'secondary' : 'primary'}
+          onClick={onClickHandlerCreator('all')}>All</Button>
+        <Button 
+          sx={{mr: '3px', fontSize: '10px', minWidth: 'fit-content'}}
+          color={props.filterValue === 'active' ? 'secondary' : 'primary'}
+          onClick={onClickHandlerCreator('active')}>Active</Button>
+        <Button 
+          sx={{fontSize: '10px', minWidth: 'fit-content'}}
+          color={props.filterValue === 'completed' ? 'secondary' : 'primary'}
+          onClick={onClickHandlerCreator('completed')}>Completed</Button>
+          </ButtonGroup>
       </div>
     </div>
   );

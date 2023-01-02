@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import "./App.css";
-import { List, TaskType } from "./List";
+import { TodoList, TaskType } from "./List";
 import { v1 } from "uuid";
 import { AddItemForm } from "./addItemForm";
+import AppBar from "@mui/material/AppBar/AppBar";
+import { Box, Button, Container, Grid, IconButton, Paper, Toolbar, Typography } from "@mui/material";
+import { Menu } from "@mui/icons-material";
 
 export type FilterType = "all" | "completed" | "active";
 
@@ -37,7 +40,6 @@ function App() {
       { id: v1(), title: "Lenses", isDone: false },
       { id: v1(), title: "Battery", isDone: true },
       { id: v1(), title: "Cards", isDone: true },
-      { id: v1(), title: "Drone", isDone: false }
     ]
   })
 
@@ -94,7 +96,9 @@ function App() {
   const listsComponents = todoLists.map((list: TodoListsType) => {
     const filteredTasks: Array<TaskType> = getFilteredTask(tasks[list.id], list.filter)
     return (
-      <List
+      <Grid item>
+      <Paper sx={{p: '20px'}} elevation={10}>
+      <TodoList
         listID={list.id}
         title={list.title}
         tasks={filteredTasks}
@@ -107,6 +111,8 @@ function App() {
         renameList={renameList}
         renameTask={changeTaskTitle}
       />
+      </Paper>
+      </Grid>
     )
 
   })
@@ -114,8 +120,33 @@ function App() {
 
   return (
     <div className="App">
+      <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static">
+        <Toolbar>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+          >
+            <Menu />
+          </IconButton>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Lists
+          </Typography>
+          <Button color="inherit">Login</Button>
+        </Toolbar>
+      </AppBar>
+    </Box>
+    <Container fixed>
+      <Grid container sx={{p: '10px 0'}}>
       <AddItemForm addItem={addList} />
+      </Grid>
+      <Grid container spacing={6}>
       {listsComponents}
+      </Grid>
+    </Container>
     </div>
   );
 }
