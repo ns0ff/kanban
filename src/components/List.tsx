@@ -1,8 +1,8 @@
 import Button from "@mui/material/Button";
-import React, { ChangeEvent, useState, KeyboardEvent } from "react";
+import React, { ChangeEvent } from "react";
 import { AddItemForm } from "./addItemForm";
-import { FilterType } from "./App";
-import { EditableSpan } from "./components/EditableSpan";
+import { FilterType } from "../App";
+import { EditableSpan } from "./EditableSpan";
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { ButtonGroup, IconButton, ListItem, Typography } from "@mui/material";
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
