@@ -15,7 +15,7 @@ export type TaskType = {
   isDone: boolean;
 };
 
-type ListType = {
+export type ListType = {
   listID: string
   title: string
   tasks: Array<TaskType>
